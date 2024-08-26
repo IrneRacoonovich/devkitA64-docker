@@ -13,20 +13,16 @@ jobs:
     name: Build updated Devkit image
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Export image tag
         run: |
           echo "TAG=`date +%Y%m%d`" >> $GITHUB_ENV
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download latest Devkit image
-        run: |
-          docker pull devkitpro/devkita64:latest
-
       - name: Build image using Dockerfile
         run: |
-          docker build . -t $IMAGE_PATH
+          docker build . --pull -t $IMAGE_PATH
           docker tag $IMAGE_PATH $IMAGE_PATH:$TAG
 
       - name: Login to GitHub Container Registry

@@ -1,0 +1,41 @@
+name: Build updated Devkit image
+
+on:
+  workflow_dispatch: 
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  IMAGE_PATH: ghcr.io/irneracoonovich/devkita64
+
+jobs:
+  Build_Image:
+    name: Build updated Devkit image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export image tag
+        run: |
+          echo "TAG=`date +%Y%m%d`" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download latest Devkit image
+        run: |
+          docker pull devkitpro/devkita64:latest
+
+      - name: Build image using Dockerfile
+        run: |
+          docker build . -t $IMAGE_PATH
+          docker tag $IMAGE_PATH $IMAGE_PATH:$TAG
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish image
+        run: |
+          docker push --all-tags $IMAGE_PATH

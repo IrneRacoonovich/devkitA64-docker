@@ -8,6 +8,9 @@ on:
 env:
   IMAGE_PATH: ghcr.io/irneracoonovich/devkita64
 
+permissions: 
+  packages: write
+
 jobs:
   Build_Image:
     name: Build updated Devkit image
